@@ -21,7 +21,6 @@ export class ArticleController {
   @UseGuards(JwtAuthGuard)
   @Post()
   create(@User() userId: number, @Body() createArticleDto: CreateArticleDto) {
-    console.log('lol', userId);
     return this.articleService.create(createArticleDto, userId);
   }
 
