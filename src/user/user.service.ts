@@ -42,35 +42,35 @@ export class UserService {
     return { id: user.id, name: user.name, email: user.email, token: token };
   }
 
-  async authUser(loginUserDto: LoginUserDto) {
-    const findUser = await this.repository.findOne({
-      where: { email: loginUserDto.email },
-    });
-    if (!findUser) {
-      throw new HttpException(
-        'Пользователь с таким email не найден!',
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    const isMatch = await bcrypt.compare(
-      loginUserDto.password,
-      findUser.password,
-    );
-    if (!isMatch) {
-      throw new HttpException('Неверный пароль', HttpStatus.FORBIDDEN);
-    }
-    const token = this.jwtService.sign({
-      id: findUser.id,
-      name: findUser.name,
-      email: findUser.email,
-    });
-    return {
-      id: findUser.id,
-      name: findUser.name,
-      email: findUser.email,
-      token: token,
-    };
-  }
+  // async authUser(loginUserDto: LoginUserDto) {
+  //   const findUser = await this.repository.findOne({
+  //     where: { email: loginUserDto.email },
+  //   });
+  //   if (!findUser) {
+  //     throw new HttpException(
+  //       'Пользователь с таким email не найден!',
+  //       HttpStatus.NOT_FOUND,
+  //     );
+  //   }
+  //   const isMatch = await bcrypt.compare(
+  //     loginUserDto.password,
+  //     findUser.password,
+  //   );
+  //   if (!isMatch) {
+  //     throw new HttpException('Неверный пароль', HttpStatus.FORBIDDEN);
+  //   }
+  //   const token = this.jwtService.sign({
+  //     id: findUser.id,
+  //     name: findUser.name,
+  //     email: findUser.email,
+  //   });
+  //   return {
+  //     id: findUser.id,
+  //     name: findUser.name,
+  //     email: findUser.email,
+  //     token: token,
+  //   };
+  // }
 
   findAll() {
     return `This action returns all user`;
@@ -96,6 +96,26 @@ export class UserService {
     return { name: user.name, email: user.email, articles };
   }
 
+  async findUser(loginUserDto: LoginUserDto) {
+    const user = await this.repository.findOne({
+      where: { email: loginUserDto.email },
+    });
+    if (!user) {
+      throw new HttpException(
+        'Пользователь с таким email не найден!',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    const isMatch = await bcrypt.compare(loginUserDto.password, user.password);
+    if (!isMatch) {
+      throw new HttpException('Неверный пароль', HttpStatus.FORBIDDEN);
+    }
+    return user;
+  }
+  async findById(id: number) {
+    const user = await this.repository.findOne(id);
+    return user;
+  }
   // update(id: number, updateUserDto: UpdateUserDto) {
   //   return `This action updates a #${id} user`;
   // }

@@ -20,10 +20,10 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
-  @Post('/login')
-  login(@Body() loginUserDto: LoginUserDto) {
-    return this.userService.authUser(loginUserDto);
-  }
+  // @Post('/login')
+  // login(@Body() loginUserDto: LoginUserDto) {
+  //   return this.userService.authUser(loginUserDto);
+  // }
 
   @Get()
   findAll() {

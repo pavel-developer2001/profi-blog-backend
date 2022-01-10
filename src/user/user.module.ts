@@ -6,7 +6,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from './entities/user.entity';
 import { JwtModule } from '@nestjs/jwt';
 
-console.log('sdvas', process.env.SECRET_KEY);
 @Module({
   imports: [
     TypeOrmModule.forFeature([UserEntity, ArticleEntity]),
@@ -17,5 +16,6 @@ console.log('sdvas', process.env.SECRET_KEY);
   ],
   controllers: [UserController],
   providers: [UserService],
+  exports: [UserService],
 })
 export class UserModule {}
