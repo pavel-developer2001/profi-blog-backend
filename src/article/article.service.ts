@@ -12,7 +12,7 @@ export class ArticleService {
     private repository: Repository<ArticleEntity>,
   ) {}
 
-  create(createArticleDto: CreateArticleDto) {
+  create(createArticleDto: CreateArticleDto, userId: number) {
     if (createArticleDto.title.length === 0) {
       throw new HttpException(
         'Вы не ввели название статьи!',
@@ -21,7 +21,7 @@ export class ArticleService {
     }
     return this.repository.save({
       ...createArticleDto,
-      user: { id: createArticleDto.userId },
+      user: { id: userId },
     });
   }
 
@@ -41,22 +41,35 @@ export class ArticleService {
     return article;
   }
 
-  async update(id: number, updateArticleDto: UpdateArticleDto) {
+  async update(id: number, updateArticleDto: UpdateArticleDto, userId: number) {
     const article = await this.repository.findOne({ where: { id } });
     if (!article) {
       throw new HttpException('Статья не найдена', HttpStatus.NOT_FOUND);
     }
+    if (article.user.id !== userId) {
+      throw new HttpException(
+        'Вы не можете редактировать эту статью',
+        HttpStatus.FORBIDDEN,
+      );
+    }
     await this.repository.update(id, {
       title: updateArticleDto.title,
       text: updateArticleDto.text,
+      user: { id: userId },
     });
     return await this.repository.findOne({ where: { id } });
   }
 
-  async remove(id: number) {
+  async remove(id: number, userId: number) {
     const article = await this.repository.findOne({ where: { id } });
     if (!article) {
       throw new HttpException('Статья не найдена', HttpStatus.NOT_FOUND);
+    }
+    if (article.user.id !== userId) {
+      throw new HttpException(
+        'Вы не можете удалить эту статью',
+        HttpStatus.FORBIDDEN,
+      );
     }
     await this.repository.delete(id);
     return article;
