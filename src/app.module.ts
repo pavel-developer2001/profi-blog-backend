@@ -8,6 +8,7 @@ import { ArticleModule } from './article/article.module';
 import { ArticleEntity } from './article/entities/article.entity';
 import { CommentModule } from './comment/comment.module';
 import { CommentEntity } from './comment/entities/comment.entity';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { CommentEntity } from './comment/entities/comment.entity';
     UserModule,
     ArticleModule,
     CommentModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],

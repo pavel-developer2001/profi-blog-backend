@@ -9,6 +9,4 @@ export class CreateArticleDto {
 
   @IsOptional()
   img?: string;
-
-  userId: number;
 }
