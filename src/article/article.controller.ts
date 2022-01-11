@@ -7,7 +7,10 @@ import {
   Param,
   Delete,
   UseGuards,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { User } from 'src/decorators/user.decorator';
 import { ArticleService } from './article.service';
@@ -20,8 +23,10 @@ export class ArticleController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@User() userId: number, @Body() createArticleDto: CreateArticleDto) {
-    return this.articleService.create(createArticleDto, userId);
+  @UseInterceptors(FileInterceptor('file'))
+  create(@User() userId: number, @UploadedFile() file: Express.Multer.File) {
+    console.log('AAAAAAAAA', file, userId);
+    return this.articleService.create(file, userId);
   }
 
   @Get()

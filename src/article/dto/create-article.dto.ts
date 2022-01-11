@@ -8,5 +8,5 @@ export class CreateArticleDto {
   text: string;
 
   @IsOptional()
-  img?: string;
+  img?: any;
 }

@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { Repository } from 'typeorm';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
@@ -10,19 +11,28 @@ export class ArticleService {
   constructor(
     @InjectRepository(ArticleEntity)
     private repository: Repository<ArticleEntity>,
+    private cloudinary: CloudinaryService,
   ) {}
 
-  create(createArticleDto: CreateArticleDto, userId: number) {
-    if (createArticleDto.title.length === 0) {
-      throw new HttpException(
-        'Вы не ввели название статьи!',
-        HttpStatus.FORBIDDEN,
-      );
+  async create(createArticleDto: any, userId: number) {
+    try {
+      console.log('EIGIEA', createArticleDto);
+      if (createArticleDto.title.length === 0) {
+        throw new HttpException(
+          'Вы не ввели название статьи!',
+          HttpStatus.FORBIDDEN,
+        );
+      }
+      // console.log('file', createArticleDto.img);
+      // const test = await this.cloudinary.uploadImage(createArticleDto.img);
+      // console.log(test);
+      return this.repository.save({
+        ...createArticleDto,
+        user: { id: userId },
+      });
+    } catch (error) {
+      console.error(error);
     }
-    return this.repository.save({
-      ...createArticleDto,
-      user: { id: userId },
-    });
   }
 
   findAll() {

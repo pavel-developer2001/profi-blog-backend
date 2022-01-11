@@ -9,6 +9,7 @@ import { ArticleEntity } from './article/entities/article.entity';
 import { CommentModule } from './comment/comment.module';
 import { CommentEntity } from './comment/entities/comment.entity';
 import { AuthModule } from './auth/auth.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { AuthModule } from './auth/auth.module';
     ArticleModule,
     CommentModule,
     AuthModule,
+    CloudinaryModule,
   ],
   controllers: [],
   providers: [],

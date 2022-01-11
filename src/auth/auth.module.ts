@@ -6,14 +6,16 @@ import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './strategies/local.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { ConfigModule } from '@nestjs/config';
 
 console.log('sdvas', process.env.SECRET_KEY);
 @Module({
   imports: [
+    ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
     UserModule,
     PassportModule,
     JwtModule.register({
-      secret: 'secret key',
+      secret: process.env.SECRET_KEY,
       signOptions: { expiresIn: '30d' },
     }),
   ],
