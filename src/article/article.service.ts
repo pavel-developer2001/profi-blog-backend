@@ -12,19 +12,33 @@ export class ArticleService {
     private repository: Repository<ArticleEntity>,
   ) {}
 
-  create(createArticleDto: CreateArticleDto, userId: number) {
-    if (createArticleDto.title.length === 0) {
-      throw new HttpException(
-        'Вы не ввели название статьи!',
-        HttpStatus.FORBIDDEN,
-      );
+  async create(createArticleDto: CreateArticleDto, userId: number) {
+    try {
+      if (createArticleDto.title.length === 0) {
+        throw new HttpException(
+          'Вы не ввели название статьи!',
+          HttpStatus.FORBIDDEN,
+        );
+      }
+      return await this.repository.save({
+        ...createArticleDto,
+        user: { id: userId },
+      });
+    } catch (error) {
+      console.error(error);
     }
-    return this.repository.save({
-      ...createArticleDto,
-      user: { id: userId },
-    });
   }
-
+  async addImg(img: string, id: number) {
+    try {
+      if (!img) {
+        return null;
+      }
+      await this.repository.update(id, { img });
+      return await this.repository.findOne({ where: { id } });
+    } catch (error) {
+      console.error('error', error);
+    }
+  }
   findAll() {
     return this.repository.find({
       order: {
