@@ -14,5 +14,6 @@ import { ConfigModule } from '@nestjs/config';
   ],
   controllers: [ArticleController],
   providers: [ArticleService],
+  exports: [ArticleService],
 })
 export class ArticleModule {}

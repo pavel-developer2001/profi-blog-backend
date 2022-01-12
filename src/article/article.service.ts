@@ -11,22 +11,17 @@ export class ArticleService {
   constructor(
     @InjectRepository(ArticleEntity)
     private repository: Repository<ArticleEntity>,
-    private cloudinary: CloudinaryService,
   ) {}
 
-  async create(createArticleDto: any, userId: number) {
+  async create(createArticleDto: CreateArticleDto, userId: number) {
     try {
-      console.log('EIGIEA', createArticleDto);
       if (createArticleDto.title.length === 0) {
         throw new HttpException(
           'Вы не ввели название статьи!',
           HttpStatus.FORBIDDEN,
         );
       }
-      // console.log('file', createArticleDto.img);
-      // const test = await this.cloudinary.uploadImage(createArticleDto.img);
-      // console.log(test);
-      return this.repository.save({
+      return await this.repository.save({
         ...createArticleDto,
         user: { id: userId },
       });
@@ -34,7 +29,17 @@ export class ArticleService {
       console.error(error);
     }
   }
-
+  async addImg(img: string, id: number) {
+    try {
+      if (!img) {
+        return null;
+      }
+      await this.repository.update(id, { img });
+      return await this.repository.findOne({ where: { id } });
+    } catch (error) {
+      console.error('error', error);
+    }
+  }
   findAll() {
     return this.repository.find({
       order: {

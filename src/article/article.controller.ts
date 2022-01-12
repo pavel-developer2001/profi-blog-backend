@@ -1,3 +1,4 @@
+import { findById } from './../../../client/src/store/modules/user/user.slice';
 import {
   Controller,
   Get,
@@ -12,6 +13,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { User } from 'src/decorators/user.decorator';
 import { ArticleService } from './article.service';
 import { CreateArticleDto } from './dto/create-article.dto';
@@ -19,14 +21,25 @@ import { UpdateArticleDto } from './dto/update-article.dto';
 
 @Controller('articles')
 export class ArticleController {
-  constructor(private readonly articleService: ArticleService) {}
+  constructor(
+    private readonly articleService: ArticleService,
+    private readonly cloudinary: CloudinaryService,
+  ) {}
 
   @UseGuards(JwtAuthGuard)
-  @Post()
-  @UseInterceptors(FileInterceptor('file'))
-  create(@User() userId: number, @UploadedFile() file: Express.Multer.File) {
-    console.log('AAAAAAAAA', file, userId);
-    return this.articleService.create(file, userId);
+  @Post('upload')
+  @UseInterceptors(FileInterceptor('img'))
+  async create(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() createArticleDto: CreateArticleDto,
+    @User() userId: number,
+  ) {
+    const newArticle = await this.articleService.create(
+      createArticleDto,
+      userId,
+    );
+
+    return await this.cloudinary.uploadImgArticle(file, newArticle.id);
   }
 
   @Get()

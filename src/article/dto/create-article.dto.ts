@@ -6,7 +6,4 @@ export class CreateArticleDto {
 
   @Length(3)
   text: string;
-
-  @IsOptional()
-  img?: any;
 }
