@@ -9,6 +9,9 @@ export class CloudinaryService {
     private articleService: ArticleService,
   ) {}
   async uploadImgArticle(file: Express.Multer.File, id: number): Promise<any> {
+    if (!file) {
+      return '';
+    }
     v2.uploader
       .upload_stream({ resource_type: 'auto' }, (error, result) => {
         if (error || !result) {
