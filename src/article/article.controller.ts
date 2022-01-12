@@ -1,4 +1,3 @@
-import { findById } from './../../../client/src/store/modules/user/user.slice';
 import {
   Controller,
   Get,
@@ -10,6 +9,8 @@ import {
   UseGuards,
   UseInterceptors,
   UploadedFile,
+  forwardRef,
+  Inject,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -23,7 +24,8 @@ import { UpdateArticleDto } from './dto/update-article.dto';
 export class ArticleController {
   constructor(
     private readonly articleService: ArticleService,
-    private readonly cloudinary: CloudinaryService,
+    @Inject(forwardRef(() => CloudinaryService))
+    private cloudinary: CloudinaryService,
   ) {}
 
   @UseGuards(JwtAuthGuard)
@@ -38,8 +40,8 @@ export class ArticleController {
       createArticleDto,
       userId,
     );
-
-    return await this.cloudinary.uploadImgArticle(file, newArticle.id);
+    await this.cloudinary.uploadImgArticle(file, newArticle.id);
+    return this.articleService.findOne(newArticle.id);
   }
 
   @Get()
