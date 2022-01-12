@@ -1,3 +1,4 @@
+import { CategoryModule } from './../category/category.module';
 import { forwardRef, Module } from '@nestjs/common';
 import { ArticleService } from './article.service';
 import { ArticleController } from './article.controller';
@@ -11,6 +12,7 @@ import { ConfigModule } from '@nestjs/config';
     ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
     TypeOrmModule.forFeature([ArticleEntity]),
     forwardRef(() => CloudinaryModule),
+    CategoryModule,
   ],
   controllers: [ArticleController],
   providers: [ArticleService],

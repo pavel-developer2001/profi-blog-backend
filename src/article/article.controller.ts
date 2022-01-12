@@ -14,6 +14,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { CategoryService } from 'src/category/category.service';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { User } from 'src/decorators/user.decorator';
 import { ArticleService } from './article.service';
@@ -26,6 +27,7 @@ export class ArticleController {
     private readonly articleService: ArticleService,
     @Inject(forwardRef(() => CloudinaryService))
     private cloudinary: CloudinaryService,
+    private categoryService: CategoryService,
   ) {}
 
   @UseGuards(JwtAuthGuard)
@@ -39,6 +41,9 @@ export class ArticleController {
     const newArticle = await this.articleService.create(
       createArticleDto,
       userId,
+    );
+    await createArticleDto.categories.map((category) =>
+      this.categoryService.create(category, newArticle.id),
     );
     await this.cloudinary.uploadImgArticle(file, newArticle.id);
     return this.articleService.findOne(newArticle.id);

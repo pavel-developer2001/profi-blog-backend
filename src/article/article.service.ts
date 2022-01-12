@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CategoryService } from 'src/category/category.service';
 import { Repository } from 'typeorm';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
@@ -10,6 +11,7 @@ export class ArticleService {
   constructor(
     @InjectRepository(ArticleEntity)
     private repository: Repository<ArticleEntity>,
+    private categoryService: CategoryService,
   ) {}
 
   async create(createArticleDto: CreateArticleDto, userId: number) {
@@ -52,7 +54,8 @@ export class ArticleService {
     if (!article) {
       throw new HttpException('Статья не найдена', HttpStatus.NOT_FOUND);
     }
-    return article;
+    const categories = await this.categoryService.findByArticle(article.id);
+    return { article, categories };
   }
 
   async update(id: number, updateArticleDto: UpdateArticleDto, userId: number) {

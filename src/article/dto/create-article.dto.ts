@@ -6,4 +6,6 @@ export class CreateArticleDto {
 
   @Length(3)
   text: string;
+
+  categories?: any;
 }

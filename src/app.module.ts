@@ -10,6 +10,8 @@ import { CommentModule } from './comment/comment.module';
 import { CommentEntity } from './comment/entities/comment.entity';
 import { AuthModule } from './auth/auth.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { CategoryModule } from './category/category.module';
+import { CategoryEntity } from './category/entities/category.entity';
 
 @Module({
   imports: [
@@ -21,7 +23,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
       username: process.env.POSTGRES_USERNAME,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
-      entities: [UserEntity, ArticleEntity, CommentEntity],
+      entities: [UserEntity, ArticleEntity, CommentEntity, CategoryEntity],
       synchronize: true,
     }),
     UserModule,
@@ -29,6 +31,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
     CommentModule,
     AuthModule,
     CloudinaryModule,
+    CategoryModule,
   ],
   controllers: [],
   providers: [],
