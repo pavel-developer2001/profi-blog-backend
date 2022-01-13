@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ArticleEntity } from './entities/article.entity';
 import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
 import { ConfigModule } from '@nestjs/config';
+import { CommentModule } from 'src/comment/comment.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { ConfigModule } from '@nestjs/config';
     TypeOrmModule.forFeature([ArticleEntity]),
     forwardRef(() => CloudinaryModule),
     CategoryModule,
+    CommentModule
   ],
   controllers: [ArticleController],
   providers: [ArticleService],

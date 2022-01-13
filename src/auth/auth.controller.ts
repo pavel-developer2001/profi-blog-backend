@@ -21,14 +21,18 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Request() req) {
-    return await this.authService.login(req.user);
+    try {
+      return await this.authService.login(req.user);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   @Post('/register')
   register(@Body() createUserDto: RegisterUserDto) {
     return this.authService.register(createUserDto);
   }
-  
+
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   getProfile(@Request() req) {

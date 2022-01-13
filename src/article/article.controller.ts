@@ -38,15 +38,19 @@ export class ArticleController {
     @Body() createArticleDto: CreateArticleDto,
     @User() userId: number,
   ) {
-    const newArticle = await this.articleService.create(
-      createArticleDto,
-      userId,
-    );
-    await createArticleDto.categories.map((category) =>
-      this.categoryService.create(category, newArticle.id),
-    );
-    await this.cloudinary.uploadImgArticle(file, newArticle.id);
-    return this.articleService.findOne(newArticle.id);
+    try {
+      const newArticle = await this.articleService.create(
+        createArticleDto,
+        userId,
+      );
+      await createArticleDto.categories.map((category) =>
+        this.categoryService.create(category, newArticle.id),
+      );
+      await this.cloudinary.uploadImgArticle(file, newArticle.id);
+      return this.articleService.findOne(newArticle.id);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   @Get()

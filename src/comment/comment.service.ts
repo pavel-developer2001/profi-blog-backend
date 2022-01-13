@@ -20,13 +20,17 @@ export class CommentService {
   }
 
   async findAll(id: string) {
-    const comments = await this.repository.find({
-      where: { article: { id } },
-      order: {
-        createdAt: 'DESC',
-      },
-    });
-    return comments;
+    try {
+      const comments = await this.repository.find({
+        where: { article: { id } },
+        order: {
+          createdAt: 'DESC',
+        },
+      });
+      return comments;
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   findOne(id: number) {
@@ -35,5 +39,15 @@ export class CommentService {
 
   remove(id: number) {
     return `This action removes a #${id} comment`;
+  }
+  async removeByArticle(id: number) {
+    try {
+      const findComments = await this.repository.find({
+        where: { article: { id } },
+      });
+      return findComments.map((item) => this.repository.delete(item.id));
+    } catch (error) {
+      console.error(error);
+    }
   }
 }

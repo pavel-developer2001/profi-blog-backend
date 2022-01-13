@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CategoryService } from 'src/category/category.service';
+import { CommentService } from 'src/comment/comment.service';
 import { Repository } from 'typeorm';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
@@ -12,6 +13,7 @@ export class ArticleService {
     @InjectRepository(ArticleEntity)
     private repository: Repository<ArticleEntity>,
     private categoryService: CategoryService,
+    private commentService: CommentService,
   ) {}
 
   async create(createArticleDto: CreateArticleDto, userId: number) {
@@ -50,31 +52,39 @@ export class ArticleService {
   }
 
   async findOne(id: number) {
-    const article = await this.repository.findOne({ where: { id } });
-    if (!article) {
-      throw new HttpException('Статья не найдена', HttpStatus.NOT_FOUND);
+    try {
+      const article = await this.repository.findOne({ where: { id } });
+      if (!article) {
+        throw new HttpException('Статья не найдена', HttpStatus.NOT_FOUND);
+      }
+      const categories = await this.categoryService.findByArticle(article.id);
+      return { article, categories };
+    } catch (error) {
+      console.error(error);
     }
-    const categories = await this.categoryService.findByArticle(article.id);
-    return { article, categories };
   }
 
   async update(id: number, updateArticleDto: UpdateArticleDto, userId: number) {
-    const article = await this.repository.findOne({ where: { id } });
-    if (!article) {
-      throw new HttpException('Статья не найдена', HttpStatus.NOT_FOUND);
+    try {
+      const article = await this.repository.findOne({ where: { id } });
+      if (!article) {
+        throw new HttpException('Статья не найдена', HttpStatus.NOT_FOUND);
+      }
+      if (article.user.id !== userId) {
+        throw new HttpException(
+          'Вы не можете редактировать эту статью',
+          HttpStatus.FORBIDDEN,
+        );
+      }
+      await this.repository.update(id, {
+        title: updateArticleDto.title,
+        text: updateArticleDto.text,
+        user: { id: userId },
+      });
+      return await this.repository.findOne({ where: { id } });
+    } catch (error) {
+      console.error(error);
     }
-    if (article.user.id !== userId) {
-      throw new HttpException(
-        'Вы не можете редактировать эту статью',
-        HttpStatus.FORBIDDEN,
-      );
-    }
-    await this.repository.update(id, {
-      title: updateArticleDto.title,
-      text: updateArticleDto.text,
-      user: { id: userId },
-    });
-    return await this.repository.findOne({ where: { id } });
   }
 
   async remove(id: number, userId: number) {
@@ -88,7 +98,11 @@ export class ArticleService {
         HttpStatus.FORBIDDEN,
       );
     }
+
+    await this.categoryService.remove(id);
+    await this.commentService.removeByArticle(id);
     await this.repository.delete(id);
+
     return article;
   }
 }

@@ -9,16 +9,20 @@ export class CloudinaryService {
     private articleService: ArticleService,
   ) {}
   async uploadImgArticle(file: Express.Multer.File, id: number): Promise<any> {
-    if (!file) {
-      return '';
+    try {
+      if (!file) {
+        return '';
+      }
+      v2.uploader
+        .upload_stream({ resource_type: 'auto' }, (error, result) => {
+          if (error || !result) {
+            console.error('ERRRRRRRRRROOOOOOOOORR ', error);
+          }
+          this.articleService.addImg(result.url, id);
+        })
+        .end(file.buffer);
+    } catch (error) {
+      console.error(error);
     }
-    v2.uploader
-      .upload_stream({ resource_type: 'auto' }, (error, result) => {
-        if (error || !result) {
-          console.error('ERRRRRRRRRROOOOOOOOORR ', error);
-        }
-        this.articleService.addImg(result.url, id);
-      })
-      .end(file.buffer);
   }
 }
