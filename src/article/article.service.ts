@@ -1,11 +1,13 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CategoryService } from 'src/category/category.service';
+import { getConnection } from 'typeorm';
 import { CommentService } from 'src/comment/comment.service';
 import { Repository } from 'typeorm';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { ArticleEntity } from './entities/article.entity';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class ArticleService {
@@ -14,20 +16,29 @@ export class ArticleService {
     private repository: Repository<ArticleEntity>,
     private categoryService: CategoryService,
     private commentService: CommentService,
+    private userService: UserService,
   ) {}
 
   async create(createArticleDto: CreateArticleDto, userId: number) {
     try {
+      const connection = getConnection();
       if (createArticleDto.title.length === 0) {
         throw new HttpException(
           'Вы не ввели название статьи!',
           HttpStatus.FORBIDDEN,
         );
       }
-      return await this.repository.save({
-        ...createArticleDto,
-        user: { id: userId },
-      });
+      const categories = [];
+      for (const category of createArticleDto.categories) {
+        const savedCategory = await this.categoryService.findByName(category);
+        categories.push(...savedCategory);
+      }
+      const article = new ArticleEntity();
+      article.title = createArticleDto.title;
+      article.text = createArticleDto.text;
+      article.user = await this.userService.findById(userId);
+      article.categories = categories;
+      return await connection.manager.save(article);
     } catch (error) {
       console.error(error);
     }
@@ -57,8 +68,7 @@ export class ArticleService {
       if (!article) {
         throw new HttpException('Статья не найдена', HttpStatus.NOT_FOUND);
       }
-      const categories = await this.categoryService.findByArticle(article.id);
-      return { article, categories };
+      return article;
     } catch (error) {
       console.error(error);
     }
@@ -99,7 +109,6 @@ export class ArticleService {
       );
     }
 
-    await this.categoryService.remove(id);
     await this.commentService.removeByArticle(id);
     await this.repository.delete(id);
 

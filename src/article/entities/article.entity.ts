@@ -1,3 +1,4 @@
+import { CategoryEntity } from 'src/category/entities/category.entity';
 import { UserEntity } from 'src/user/entities/user.entity';
 import {
   Entity,
@@ -6,6 +7,8 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 
 @Entity('articles')
@@ -24,6 +27,13 @@ export class ArticleEntity {
 
   @ManyToOne(() => UserEntity, { eager: true })
   user: UserEntity;
+
+  @ManyToMany((type) => CategoryEntity, (category) => category.articles, {
+    cascade: true,
+    eager: true,
+  })
+  @JoinTable()
+  categories: CategoryEntity[];
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;

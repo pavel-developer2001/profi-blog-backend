@@ -5,7 +5,7 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  ManyToOne,
+  ManyToMany,
 } from 'typeorm';
 
 @Entity('categories')
@@ -14,10 +14,10 @@ export class CategoryEntity {
   id: number;
 
   @Column()
-  category: string;
+  name: string;
 
-  @ManyToOne(() => ArticleEntity, { eager: true })
-  article: ArticleEntity;
+  @ManyToMany((type) => ArticleEntity, (article) => article.categories)
+  articles: ArticleEntity[];
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
