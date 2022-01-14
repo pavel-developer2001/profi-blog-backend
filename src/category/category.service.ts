@@ -31,11 +31,7 @@ export class CategoryService {
 
   async remove(id: number) {
     try {
-      const findCategories = await this.repository.find({
-        where: { article: { id } },
-      });
-
-      return findCategories.map((item) => this.repository.delete(item.id));
+      return 'THis is' + id;
     } catch (error) {
       console.error(error);
     }

@@ -68,8 +68,7 @@ export class ArticleService {
       if (!article) {
         throw new HttpException('Статья не найдена', HttpStatus.NOT_FOUND);
       }
-      const categories = await this.categoryService.findByArticle(article.id);
-      return { article, categories };
+      return article;
     } catch (error) {
       console.error(error);
     }
@@ -110,7 +109,6 @@ export class ArticleService {
       );
     }
 
-    await this.categoryService.remove(id);
     await this.commentService.removeByArticle(id);
     await this.repository.delete(id);
 
