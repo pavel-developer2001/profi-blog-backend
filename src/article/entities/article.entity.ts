@@ -28,7 +28,9 @@ export class ArticleEntity {
   @ManyToOne(() => UserEntity, { eager: true })
   user: UserEntity;
 
-  @ManyToMany(() => CategoryEntity)
+  @ManyToMany((type) => CategoryEntity, (category) => category.articles, {
+    cascade: true,
+  })
   @JoinTable()
   categories: CategoryEntity[];
 

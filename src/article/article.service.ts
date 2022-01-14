@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CategoryService } from 'src/category/category.service';
+import { getConnection } from 'typeorm';
 import { CommentService } from 'src/comment/comment.service';
 import { Repository } from 'typeorm';
 import { CreateArticleDto } from './dto/create-article.dto';
@@ -18,16 +19,33 @@ export class ArticleService {
 
   async create(createArticleDto: CreateArticleDto, userId: number) {
     try {
+      console.log('dto', createArticleDto);
+      const connection = getConnection();
       if (createArticleDto.title.length === 0) {
         throw new HttpException(
           'Вы не ввели название статьи!',
           HttpStatus.FORBIDDEN,
         );
       }
-      return await this.repository.save({
-        ...createArticleDto,
-        user: { id: userId },
-      });
+      // const artilce = await this.repository.save({
+      //   ...createArticleDto,
+      //   user: { id: userId },
+      // });
+      // console.log('articlesdsasdvas', artilce);
+      const article = new ArticleEntity();
+      console.log('user', article);
+      article.title = createArticleDto.title;
+      article.text = createArticleDto.text;
+      article.user.id = userId;
+      article.categories = createArticleDto.categories;
+      console.log('article', article);
+      const test = await connection.manager.save(article);
+      console.log('test', test);
+      return test;
+      // return await this.repository.save({
+      //   ...createArticleDto,
+      //   user: { id: userId },
+      // });
     } catch (error) {
       console.error(error);
     }

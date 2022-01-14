@@ -43,6 +43,7 @@ export class ArticleController {
         createArticleDto,
         userId,
       );
+      console.log('newArticle', newArticle);
       // await createArticleDto.categories.map((category) =>
       //   this.categoryService.create(category, newArticle.id),
       // );
