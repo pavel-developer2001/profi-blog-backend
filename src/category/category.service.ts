@@ -10,17 +10,15 @@ export class CategoryService {
     @InjectRepository(CategoryEntity)
     private repository: Repository<CategoryEntity>,
   ) {}
-  create(category: string, id: number) {
-    return this.repository.save({
-      category,
-      article: { id: Number(id) },
-    });
+  create(category: any) {
+    const value = category.category;
+    return this.repository.save({ name: value });
   }
   findByArticle(id: number) {
     return this.repository.find({ where: { article: { id } } });
   }
   findAll() {
-    return `This action returns all category`;
+    return this.repository.find();
   }
 
   findOne(id: number) {

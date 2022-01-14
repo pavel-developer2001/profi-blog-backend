@@ -1,11 +1,9 @@
-import { ArticleEntity } from 'src/article/entities/article.entity';
 import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  ManyToOne,
 } from 'typeorm';
 
 @Entity('categories')
@@ -14,10 +12,7 @@ export class CategoryEntity {
   id: number;
 
   @Column()
-  category: string;
-
-  @ManyToOne(() => ArticleEntity, { eager: true })
-  article: ArticleEntity;
+  name: string;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
