@@ -13,7 +13,7 @@ export class CategoryEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ nullable: true })
+  @Column()
   name: string;
 
   @ManyToMany((type) => ArticleEntity, (article) => article.categories)

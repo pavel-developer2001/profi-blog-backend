@@ -31,21 +31,14 @@ export class ArticleService {
       const categories = [];
       for (const category of createArticleDto.categories) {
         const savedCategory = await this.categoryService.findByName(category);
-        categories.push(savedCategory);
+        categories.push(...savedCategory);
       }
       const article = new ArticleEntity();
       article.title = createArticleDto.title;
       article.text = createArticleDto.text;
       article.user = await this.userService.findById(userId);
       article.categories = categories;
-      console.log('TTT', article);
-      const test = await connection.manager.save(article);
-      console.log('test', test);
-      return test;
-      // return await this.repository.save({
-      //   ...createArticleDto,
-      //   user: { id: userId },
-      // });
+      return await connection.manager.save(article);
     } catch (error) {
       console.error(error);
     }
