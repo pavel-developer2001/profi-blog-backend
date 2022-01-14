@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { ArticleEntity } from './entities/article.entity';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class ArticleService {
@@ -15,11 +16,11 @@ export class ArticleService {
     private repository: Repository<ArticleEntity>,
     private categoryService: CategoryService,
     private commentService: CommentService,
+    private userService: UserService,
   ) {}
 
   async create(createArticleDto: CreateArticleDto, userId: number) {
     try {
-      console.log('dto', createArticleDto);
       const connection = getConnection();
       if (createArticleDto.title.length === 0) {
         throw new HttpException(
@@ -27,18 +28,17 @@ export class ArticleService {
           HttpStatus.FORBIDDEN,
         );
       }
-      // const artilce = await this.repository.save({
-      //   ...createArticleDto,
-      //   user: { id: userId },
-      // });
-      // console.log('articlesdsasdvas', artilce);
+      const categories = [];
+      for (const category of createArticleDto.categories) {
+        const savedCategory = await this.categoryService.findByName(category);
+        categories.push(savedCategory);
+      }
       const article = new ArticleEntity();
-      console.log('user', article);
       article.title = createArticleDto.title;
       article.text = createArticleDto.text;
-      article.user.id = userId;
-      article.categories = createArticleDto.categories;
-      console.log('article', article);
+      article.user = await this.userService.findById(userId);
+      article.categories = categories;
+      console.log('TTT', article);
       const test = await connection.manager.save(article);
       console.log('test', test);
       return test;

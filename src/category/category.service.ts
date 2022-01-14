@@ -40,4 +40,8 @@ export class CategoryService {
       console.error(error);
     }
   }
+  async findByName(name: string) {
+    const cat = await this.repository.find({ where: { name } });
+    return cat;
+  }
 }

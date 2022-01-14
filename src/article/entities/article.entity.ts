@@ -30,6 +30,7 @@ export class ArticleEntity {
 
   @ManyToMany((type) => CategoryEntity, (category) => category.articles, {
     cascade: true,
+    eager: true,
   })
   @JoinTable()
   categories: CategoryEntity[];

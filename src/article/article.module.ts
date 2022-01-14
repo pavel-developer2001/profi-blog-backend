@@ -1,3 +1,4 @@
+import { UserModule } from './../user/user.module';
 import { CategoryModule } from './../category/category.module';
 import { forwardRef, Module } from '@nestjs/common';
 import { ArticleService } from './article.service';
@@ -14,7 +15,8 @@ import { CommentModule } from 'src/comment/comment.module';
     TypeOrmModule.forFeature([ArticleEntity]),
     forwardRef(() => CloudinaryModule),
     CategoryModule,
-    CommentModule
+    CommentModule,
+    UserModule,
   ],
   controllers: [ArticleController],
   providers: [ArticleService],
