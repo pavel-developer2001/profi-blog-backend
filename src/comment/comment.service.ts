@@ -40,14 +40,4 @@ export class CommentService {
   remove(id: number) {
     return `This action removes a #${id} comment`;
   }
-  async removeByArticle(id: number) {
-    try {
-      const findComments = await this.repository.find({
-        where: { article: { id } },
-      });
-      return findComments.map((item) => this.repository.delete(item.id));
-    } catch (error) {
-      console.error(error);
-    }
-  }
 }
