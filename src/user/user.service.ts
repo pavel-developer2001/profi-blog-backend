@@ -69,27 +69,20 @@ export class UserService {
   }
 
   async findUser(loginUserDto: LoginUserDto) {
-    try {
-      const user = await this.repository.findOne({
-        where: { email: loginUserDto.email },
-      });
-      if (!user) {
-        throw new HttpException(
-          'Пользователь с таким email не найден!',
-          HttpStatus.NOT_FOUND,
-        );
-      }
-      const isMatch = await bcrypt.compare(
-        loginUserDto.password,
-        user.password,
+    const user = await this.repository.findOne({
+      where: { email: loginUserDto.email },
+    });
+    if (!user) {
+      throw new HttpException(
+        'Пользователь с таким email не найден!',
+        HttpStatus.NOT_FOUND,
       );
-      if (!isMatch) {
-        throw new HttpException('Неверный пароль', HttpStatus.FORBIDDEN);
-      }
-      return user;
-    } catch (error) {
-      console.error(error);
     }
+    const isMatch = await bcrypt.compare(loginUserDto.password, user.password);
+    if (!isMatch) {
+      throw new HttpException('Неверный пароль', HttpStatus.FORBIDDEN);
+    }
+    return user;
   }
   async findById(id: number) {
     try {
