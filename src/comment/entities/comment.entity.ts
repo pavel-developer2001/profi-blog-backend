@@ -20,7 +20,10 @@ export class CommentEntity {
   @ManyToOne(() => UserEntity, { eager: true })
   user: UserEntity;
 
-  @ManyToOne(() => ArticleEntity, { eager: true })
+  @ManyToOne(() => ArticleEntity, {
+    eager: true,
+    onDelete: 'CASCADE',
+  })
   article: ArticleEntity;
 
   @CreateDateColumn({ type: 'timestamp' })

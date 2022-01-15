@@ -109,7 +109,6 @@ export class ArticleService {
       );
     }
 
-    await this.commentService.removeByArticle(id);
     await this.repository.delete(id);
 
     return article;
