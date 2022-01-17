@@ -30,8 +30,8 @@ export class ArticleService {
       }
       const categories = [];
       for (const category of createArticleDto.categories) {
-        const savedCategory = await this.categoryService.findByName(category);
-        categories.push(...savedCategory);
+        const savedCategory = await this.categoryService.findOrCreate(category);
+        categories.push(savedCategory);
       }
       const article = new ArticleEntity();
       article.title = createArticleDto.title;

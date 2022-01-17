@@ -40,4 +40,11 @@ export class CategoryService {
     const cat = await this.repository.find({ where: { name } });
     return cat;
   }
+  async findOrCreate(name: string) {
+    const category = await this.repository.find({ where: { name } });
+    if (category.length > 0) {
+      return category[0];
+    }
+    return this.repository.create({ name });
+  }
 }
